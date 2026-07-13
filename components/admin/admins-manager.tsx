@@ -63,6 +63,7 @@ export function AdminsManager({
     email: string;
     password: string;
     emailSent: boolean;
+    emailError?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -81,6 +82,7 @@ export function AdminsManager({
           email: values.email,
           password: res.password ?? "",
           emailSent: !!res.emailSent,
+          emailError: res.emailError,
         });
         swalToast(
           res.emailSent ? "success" : "warning",
@@ -281,6 +283,11 @@ export function AdminsManager({
                     </span>
                   )}
                 </div>
+                {!created.emailSent && created.emailError && (
+                  <p className="mt-2 break-words rounded-md bg-amber-500/10 p-2 text-[11px] text-amber-700 dark:text-amber-400">
+                    Raison : {created.emailError}
+                  </p>
+                )}
               </div>
             )}
           </CardContent>

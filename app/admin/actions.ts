@@ -280,6 +280,7 @@ export interface CreateAdminResult {
   /** Mot de passe généré, renvoyé une seule fois (secours si l'email échoue). */
   password?: string;
   emailSent?: boolean;
+  emailError?: string;
 }
 
 /** Crée un administrateur : compte Supabase Auth + ligne admins + email d'accès. */
@@ -365,6 +366,7 @@ export async function createAdminAction(
 
   // 3) Envoi de l'email avec les identifiants (non bloquant).
   let emailSent = false;
+  let emailError: string | undefined;
   try {
     const res = await sendNewAdminEmail({
       email: d.email,
@@ -374,12 +376,17 @@ export async function createAdminAction(
       role: d.role,
     });
     emailSent = res.ok;
-  } catch {
-    emailSent = false;
+    emailError = res.error;
+  } catch (e) {
+    emailError = (e as Error).message;
+  }
+
+  if (!emailSent) {
+    console.error("[createAdmin] Échec envoi email Brevo :", emailError);
   }
 
   revalidatePath("/admin/admins");
-  return { ok: true, password, emailSent };
+  return { ok: true, password, emailSent, emailError };
 }
 
 /** Supprime un administrateur (compte Auth + ligne admins). */

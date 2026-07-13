@@ -22,7 +22,7 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
-    default: `${PROGRAM_NAME} — Programme d'adoration du 31 Octobre 2026`,
+    default: PROGRAM_NAME,
     template: `%s · ${PROGRAM_NAME}`,
   },
   description:
@@ -43,7 +43,8 @@ export const metadata: Metadata = {
     apple: [{ url: "/icon-image?size=180", sizes: "180x180" }],
   },
   openGraph: {
-    title: `${PROGRAM_NAME} — 31 Octobre 2026`,
+    title: PROGRAM_NAME,
+    siteName: PROGRAM_NAME,
     description:
       "Inscris-toi pour participer au programme d'adoration du 31 Octobre 2026.",
     type: "website",

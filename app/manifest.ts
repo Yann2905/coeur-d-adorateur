@@ -5,8 +5,8 @@ export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${PROGRAM_NAME} — Programme d'adoration`,
-    short_name: "Cœur d'Adorateur",
+    name: PROGRAM_NAME,
+    short_name: PROGRAM_NAME,
     description:
       "Inscris-toi pour participer au programme d'adoration du 31 Octobre 2026.",
     start_url: "/",

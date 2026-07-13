@@ -257,13 +257,13 @@ export function PhoneField({
   return (
     <div
       className={cn(
-        "flex h-11 w-full items-stretch overflow-hidden rounded-lg border bg-background shadow-sm transition-colors focus-within:ring-2 focus-within:ring-ring",
+        "flex h-11 w-full min-w-0 items-stretch overflow-hidden rounded-lg border bg-background shadow-sm transition-colors focus-within:ring-2 focus-within:ring-ring",
         invalid ? "border-destructive" : "border-input",
         className
       )}
     >
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex shrink-0 items-center gap-1.5 border-r border-input bg-muted/40 px-3 text-sm font-medium outline-none transition-colors hover:bg-muted">
+        <DropdownMenuTrigger className="flex shrink-0 items-center gap-1 border-r border-input bg-muted/40 px-2.5 text-sm font-medium outline-none transition-colors hover:bg-muted">
           <FlagIcon country={country} />
           <span className="tabular-nums">{country.dial}</span>
           <ChevronDown className="h-3.5 w-3.5 opacity-60" />
@@ -291,7 +291,7 @@ export function PhoneField({
         value={local}
         onChange={handleLocal}
         placeholder={placeholder}
-        className="min-w-0 flex-1 bg-transparent px-3.5 text-base outline-none placeholder:text-muted-foreground md:text-sm"
+        className="w-full min-w-0 flex-1 bg-transparent px-3 text-base outline-none placeholder:text-muted-foreground md:text-sm"
       />
     </div>
   );

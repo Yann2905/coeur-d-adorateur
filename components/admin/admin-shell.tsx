@@ -89,35 +89,31 @@ export function AdminShell({
         </div>
       </div>
 
-      <div className="mt-6 flex-1">
+      <div className="mt-6 min-h-0 flex-1 overflow-y-auto">
         <NavLinks role={role} onNavigate={() => setMobileOpen(false)} />
       </div>
 
-      <div className="space-y-3 border-t border-border pt-4">
+      <div className="mt-3 shrink-0 space-y-2 border-t border-border pt-3">
         <Link
-          href="/inscription"
+          href="/"
           target="_blank"
           className="flex items-center gap-2 px-3 text-xs text-muted-foreground hover:text-foreground"
         >
-          <ExternalLink className="h-3.5 w-3.5" /> Voir la page d'inscription
+          <ExternalLink className="h-3.5 w-3.5" /> Voir le site public
         </Link>
-        <div className="flex items-center justify-between gap-2 rounded-lg bg-muted/60 p-2.5">
-          <div className="min-w-0">
-            <p className="truncate text-xs font-medium">{adminEmail}</p>
-            <p className="text-[10px] text-muted-foreground">Connecté</p>
-          </div>
-          <form action={logoutAction}>
-            <Button
-              variant="ghost"
-              size="icon"
-              type="submit"
-              aria-label="Se déconnecter"
-              className="h-8 w-8 text-muted-foreground hover:text-destructive"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </form>
+        <div className="rounded-lg bg-muted/60 p-2.5">
+          <p className="truncate text-xs font-medium">{adminEmail}</p>
+          <p className="text-[10px] text-muted-foreground">Connecté</p>
         </div>
+        <form action={logoutAction}>
+          <Button
+            variant="outline"
+            type="submit"
+            className="w-full justify-center gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          >
+            <LogOut className="h-4 w-4" /> Se déconnecter
+          </Button>
+        </form>
       </div>
     </div>
   );
@@ -155,8 +151,8 @@ export function AdminShell({
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-72 bg-card p-4 shadow-xl">
-            <div className="mb-2 flex justify-end">
+          <div className="absolute inset-y-0 left-0 flex w-72 flex-col bg-card p-4 shadow-xl">
+            <div className="mb-2 flex shrink-0 justify-end">
               <Button
                 variant="ghost"
                 size="icon"
@@ -166,7 +162,7 @@ export function AdminShell({
                 <X className="h-5 w-5" />
               </Button>
             </div>
-            {Sidebar}
+            <div className="flex min-h-0 flex-1 flex-col">{Sidebar}</div>
           </div>
         </div>
       )}

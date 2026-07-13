@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Fond doux, presque ivoire — spirituel et chaleureux */
+    --background: 280 40% 99%;
+    --foreground: 265 30% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 265 30% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 265 30% 12%;
+
+    /* Améthyste / violet royal — couleur de l'adoration */
+    --primary: 265 68% 46%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 280 30% 96%;
+    --secondary-foreground: 265 40% 25%;
+
+    --muted: 280 25% 96%;
+    --muted-foreground: 265 12% 45%;
+
+    --accent: 280 45% 95%;
+    --accent-foreground: 265 55% 32%;
+
+    /* Or — l'accent précieux */
+    --gold: 42 70% 52%;
+    --gold-foreground: 40 60% 15%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 280 24% 90%;
+    --input: 280 24% 88%;
+    --ring: 265 68% 46%;
+
+    --radius: 0.85rem;
+  }
+
+  .dark {
+    /* Nuit profonde teintée de violet */
+    --background: 265 32% 8%;
+    --foreground: 280 20% 96%;
+
+    --card: 265 28% 11%;
+    --card-foreground: 280 20% 96%;
+
+    --popover: 265 30% 10%;
+    --popover-foreground: 280 20% 96%;
+
+    --primary: 265 75% 68%;
+    --primary-foreground: 265 40% 12%;
+
+    --secondary: 265 22% 18%;
+    --secondary-foreground: 280 20% 92%;
+
+    --muted: 265 20% 17%;
+    --muted-foreground: 280 12% 62%;
+
+    --accent: 265 24% 20%;
+    --accent-foreground: 280 30% 92%;
+
+    --gold: 42 65% 58%;
+    --gold-foreground: 40 50% 10%;
+
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 265 20% 20%;
+    --input: 265 20% 22%;
+    --ring: 265 75% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  /* Dégradé de marque réutilisable */
+  .bg-brand-gradient {
+    background-image: linear-gradient(
+      135deg,
+      hsl(265 68% 46%) 0%,
+      hsl(285 65% 42%) 50%,
+      hsl(300 55% 40%) 100%
+    );
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)),
+      hsl(300 60% 55%)
+    );
+  }
+  .glass {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(12px);
+  }
+  /* Motif étoilé subtil pour les fonds spirituels */
+  .starfield {
+    background-image: radial-gradient(
+        1px 1px at 20% 30%,
+        hsl(0 0% 100% / 0.35) 0,
+        transparent 100%
+      ),
+      radial-gradient(1px 1px at 70% 60%, hsl(0 0% 100% / 0.25) 0, transparent 100%),
+      radial-gradient(1.5px 1.5px at 45% 80%, hsl(42 70% 70% / 0.4) 0, transparent 100%),
+      radial-gradient(1px 1px at 85% 20%, hsl(0 0% 100% / 0.25) 0, transparent 100%);
+  }
+}
+
+/* Scrollbar discrète */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.4);
+}

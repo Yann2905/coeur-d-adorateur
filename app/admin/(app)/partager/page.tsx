@@ -2,12 +2,12 @@ import { QrCode } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShareQr } from "@/components/admin/share-qr";
 import { PROGRAM_DATE_LABEL } from "@/lib/constants";
+import { getAppBaseUrl } from "@/lib/app-url";
 
 export const metadata = { title: "Partager l'inscription" };
 
 export default function PartagerPage() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-  const inscriptionUrl = `${appUrl}/inscription`;
+  const inscriptionUrl = `${getAppBaseUrl()}/inscription`;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">

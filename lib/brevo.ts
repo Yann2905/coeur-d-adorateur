@@ -1,23 +1,9 @@
 import nodemailer from "nodemailer";
 import type { RegistrationInput } from "./validations";
 import { PROGRAM_NAME } from "./constants";
+import { getAppBaseUrl } from "./app-url";
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
-
-/**
- * URL publique de l'application, sans slash final.
- * Priorité : NEXT_PUBLIC_APP_URL → domaine de production Vercel → URL du déploiement.
- */
-export function getAppBaseUrl(): string {
-  const raw =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000");
-  return raw.replace(/\/+$/, "");
-}
 
 interface BrevoRecipient {
   email: string;

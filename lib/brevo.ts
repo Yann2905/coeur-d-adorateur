@@ -3,6 +3,21 @@ import { PROGRAM_NAME } from "./constants";
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 
+/**
+ * URL publique de l'application, sans slash final.
+ * Priorité : NEXT_PUBLIC_APP_URL → domaine de production Vercel → URL du déploiement.
+ */
+export function getAppBaseUrl(): string {
+  const raw =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000");
+  return raw.replace(/\/+$/, "");
+}
+
 interface BrevoRecipient {
   email: string;
   name?: string;
@@ -61,8 +76,7 @@ export async function sendNewAdminEmail(params: {
   password: string;
   role: string;
 }): Promise<{ ok: boolean; error?: string }> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-  const loginUrl = `${appUrl}/admin/login`;
+  const loginUrl = `${getAppBaseUrl()}/admin/login`;
   const roleLabel =
     params.role === "super_admin" ? "Super administrateur" : "Administrateur";
 
@@ -125,8 +139,7 @@ export async function sendNewRegistrationEmail(
     return { ok: false, error: "Aucun ADMIN_EMAILS configuré" };
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-  const nouveauxUrl = `${appUrl}/admin/nouveaux`;
+  const nouveauxUrl = `${getAppBaseUrl()}/admin/nouveaux`;
 
   const row = (label: string, value: string) =>
     `<tr>

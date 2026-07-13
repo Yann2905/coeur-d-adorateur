@@ -1,3 +1,4 @@
+import nodemailer from "nodemailer";
 import type { RegistrationInput } from "./validations";
 import { PROGRAM_NAME } from "./constants";
 
@@ -23,21 +24,60 @@ interface BrevoRecipient {
   name?: string;
 }
 
-/** Envoi générique via l'API transactionnelle Brevo. */
-async function sendEmail(params: {
+type SendParams = {
   to: BrevoRecipient[];
   subject: string;
   htmlContent: string;
-}): Promise<{ ok: boolean; error?: string }> {
-  const apiKey = process.env.BREVO_API_KEY;
-  if (!apiKey) {
-    return { ok: false, error: "BREVO_API_KEY manquant" };
+};
+
+/**
+ * Envoi via Gmail SMTP (serveurs de Google).
+ * L'expéditeur étant une vraie adresse @gmail.com authentifiée par Google,
+ * les messages ne sont plus bloqués comme spam. Gratuit (~500 emails/jour).
+ */
+async function sendViaGmail(
+  params: SendParams
+): Promise<{ ok: boolean; error?: string }> {
+  const user = process.env.GMAIL_USER;
+  // Le mot de passe d'application Google est affiché avec des espaces : on les retire.
+  const pass = (process.env.GMAIL_APP_PASSWORD || "").replace(/\s+/g, "");
+
+  if (!user || !pass) {
+    return {
+      ok: false,
+      error: "GMAIL_USER / GMAIL_APP_PASSWORD manquant",
+    };
   }
 
-  const senderEmail = process.env.BREVO_SENDER_EMAIL;
-  if (!senderEmail) {
-    return { ok: false, error: "BREVO_SENDER_EMAIL manquant" };
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: { user, pass },
+    });
+
+    await transporter.sendMail({
+      from: `"${process.env.BREVO_SENDER_NAME || PROGRAM_NAME}" <${user}>`,
+      to: params.to.map((t) => t.email).join(","),
+      subject: params.subject,
+      html: params.htmlContent,
+    });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
   }
+}
+
+/** Envoi via l'API transactionnelle Brevo (repli). */
+async function sendViaBrevo(
+  params: SendParams
+): Promise<{ ok: boolean; error?: string }> {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) return { ok: false, error: "BREVO_API_KEY manquant" };
+
+  const senderEmail = process.env.BREVO_SENDER_EMAIL;
+  if (!senderEmail) return { ok: false, error: "BREVO_SENDER_EMAIL manquant" };
 
   try {
     const res = await fetch(BREVO_ENDPOINT, {
@@ -66,6 +106,20 @@ async function sendEmail(params: {
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }
+}
+
+/**
+ * Envoi générique.
+ * Priorité à Gmail SMTP (fiable et gratuit) s'il est configuré,
+ * sinon repli sur Brevo.
+ */
+async function sendEmail(
+  params: SendParams
+): Promise<{ ok: boolean; error?: string }> {
+  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    return sendViaGmail(params);
+  }
+  return sendViaBrevo(params);
 }
 
 /** Envoie ses identifiants à un nouvel administrateur. */

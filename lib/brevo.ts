@@ -67,42 +67,40 @@ export async function sendNewAdminEmail(params: {
     params.role === "super_admin" ? "Super administrateur" : "Administrateur";
 
   const cred = (label: string, value: string) =>
-    `<tr>
-       <td style="padding:10px 14px;color:#6b7280;font-size:13px;">${label}</td>
-       <td style="padding:10px 14px;color:#111827;font-size:14px;font-weight:700;font-family:monospace;background:#faf9fe;border-radius:6px;">${value}</td>
-     </tr>`;
+    `<div style="margin-bottom:10px;">
+       <div style="color:#6b7280;font-size:12px;margin-bottom:3px;">${label}</div>
+       <div style="color:#111827;font-size:15px;font-weight:700;font-family:'Courier New',monospace;background:#f4f1fb;border:1px solid #e6e0f5;border-radius:8px;padding:10px 12px;word-break:break-all;">${value}</div>
+     </div>`;
 
   const htmlContent = `
-  <div style="background:#f6f5fb;padding:24px;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
-    <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #eceafc;">
-      <div style="background:linear-gradient(135deg,#5b21b6,#7c3aed);padding:28px 24px;text-align:center;">
-        <h1 style="color:#ffffff;font-size:20px;margin:0 0 2px;">${PROGRAM_NAME}</h1>
-        <p style="color:#e9d5ff;font-size:13px;margin:0;">Accès administrateur</p>
+  <div style="background:#f6f5fb;padding:16px;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
+    <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #eceafc;">
+      <div style="background:linear-gradient(135deg,#5b21b6,#7c3aed);padding:20px 20px;text-align:center;">
+        <h1 style="color:#ffffff;font-size:17px;margin:0 0 2px;">${PROGRAM_NAME}</h1>
+        <p style="color:#e9d5ff;font-size:12px;margin:0;">Accès administrateur</p>
       </div>
-      <div style="padding:24px;">
-        <p style="color:#111827;font-size:16px;margin-top:0;">Bonjour ${params.prenom} ${params.nom},</p>
-        <p style="color:#374151;font-size:15px;">
-          Un compte <strong>${roleLabel}</strong> vient d'être créé pour toi sur la
-          plateforme <strong>${PROGRAM_NAME}</strong>. Voici tes identifiants de connexion :
+      <div style="padding:20px;">
+        <p style="color:#111827;font-size:14px;margin:0 0 4px;">Bonjour ${params.prenom} ${params.nom},</p>
+        <p style="color:#374151;font-size:13px;margin:0 0 14px;">
+          Un compte <strong>${roleLabel}</strong> a été créé pour toi. Voici tes
+          identifiants de connexion :
         </p>
-        <table style="width:100%;border-collapse:separate;border-spacing:0 6px;margin:16px 0;">
-          ${cred("Identifiant (email)", params.email)}
-          ${cred("Mot de passe", params.password)}
-        </table>
-        <div style="background:#fef9ec;border:1px solid #f5e2b3;border-radius:10px;padding:12px 14px;margin:14px 0;">
-          <p style="color:#92670a;font-size:13px;margin:0;">
+        ${cred("Identifiant (email)", params.email)}
+        ${cred("Mot de passe", params.password)}
+        <div style="background:#fef9ec;border:1px solid #f5e2b3;border-radius:8px;padding:10px 12px;margin:12px 0;">
+          <p style="color:#92670a;font-size:12px;margin:0;">
             Garde ces informations confidentielles. Un changement de mot de passe
             te sera demandé à ta première connexion.
           </p>
         </div>
-        <div style="text-align:center;margin-top:26px;">
-          <a href="${loginUrl}" style="display:inline-block;background:#7c3aed;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:12px 30px;border-radius:10px;">
-            Me connecter à l'espace admin
+        <div style="text-align:center;margin-top:18px;">
+          <a href="${loginUrl}" style="display:inline-block;background:#7c3aed;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:11px 24px;border-radius:9px;">
+            Me connecter
           </a>
         </div>
       </div>
-      <div style="background:#faf9fe;padding:16px 24px;text-align:center;">
-        <p style="color:#9ca3af;font-size:12px;margin:0;">${PROGRAM_NAME} — Programme du 1er Novembre 2026</p>
+      <div style="background:#faf9fe;padding:12px 20px;text-align:center;">
+        <p style="color:#9ca3af;font-size:11px;margin:0;">${PROGRAM_NAME} — 1er Novembre 2026</p>
       </div>
     </div>
   </div>`;

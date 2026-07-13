@@ -217,7 +217,7 @@ export function RegistrationForm() {
               id="ville"
               value={values.ville}
               onChange={(e) => set("ville", e.target.value)}
-              placeholder="Ex. Cotonou"
+              placeholder="Ex. Daloa"
               className={cn("mt-1.5", errors.ville && "border-destructive")}
             />
             <FieldError msg={errors.ville} />
@@ -228,7 +228,7 @@ export function RegistrationForm() {
               id="quartier"
               value={values.quartier}
               onChange={(e) => set("quartier", e.target.value)}
-              placeholder="Ex. Cadjèhoun"
+              placeholder="Ex. Tazibouo"
               className={cn("mt-1.5", errors.quartier && "border-destructive")}
             />
             <FieldError msg={errors.quartier} />
@@ -320,15 +320,15 @@ export function RegistrationForm() {
               <p className="mt-0.5 text-sm text-muted-foreground">
                 Un repas de communion fraternelle suivra la journée d'adoration.
               </p>
-              <div className="mt-3 flex gap-3">
+              <div className="mt-3 grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => set("agape", true)}
                   className={cn(
-                    "flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all",
+                    "flex h-12 items-center justify-center rounded-xl border-2 text-sm font-semibold transition-all active:scale-[0.98]",
                     values.agape
-                      ? "border-gold bg-gold text-gold-foreground shadow-sm"
-                      : "border-input bg-background hover:bg-accent"
+                      ? "border-gold bg-gold text-gold-foreground shadow-md"
+                      : "border-input bg-background hover:border-gold/50 hover:bg-accent"
                   )}
                 >
                   Oui, je serai là
@@ -337,10 +337,10 @@ export function RegistrationForm() {
                   type="button"
                   onClick={() => set("agape", false)}
                   className={cn(
-                    "flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all",
+                    "flex h-12 items-center justify-center rounded-xl border-2 text-sm font-semibold transition-all active:scale-[0.98]",
                     !values.agape
-                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                      : "border-input bg-background hover:bg-accent"
+                      ? "border-primary bg-primary text-primary-foreground shadow-md"
+                      : "border-input bg-background hover:border-primary/50 hover:bg-accent"
                   )}
                 >
                   Non / Pas sûr
@@ -355,7 +355,7 @@ export function RegistrationForm() {
         type="submit"
         size="lg"
         disabled={pending}
-        className="h-13 w-full text-base"
+        className="h-14 w-full text-base font-semibold shadow-md"
       >
         {pending ? (
           <>

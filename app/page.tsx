@@ -147,7 +147,7 @@ export default async function HomePage() {
               asChild
               size="lg"
               variant="gold"
-              className="mt-8 h-13 px-8"
+              className="mt-8 h-14 px-8 font-semibold shadow-md"
             >
               <Link href="/inscription">
                 S'inscrire au programme

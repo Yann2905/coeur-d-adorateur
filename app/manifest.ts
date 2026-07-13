@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: `${PROGRAM_NAME} — Programme d'adoration`,
     short_name: "Cœur d'Adorateur",
     description:
-      "Inscris-toi pour participer au programme d'adoration du 1er Novembre 2026.",
+      "Inscris-toi pour participer au programme d'adoration du 31 Octobre 2026.",
     start_url: "/",
     scope: "/",
     display: "standalone",

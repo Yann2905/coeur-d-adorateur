@@ -1,6 +1,6 @@
 export const PROGRAM_NAME = "Cœur d'Adorateur";
-export const PROGRAM_DATE_LABEL = "1er Novembre 2026";
-export const PROGRAM_DATE_ISO = "2026-11-01T00:00:00.000Z";
+export const PROGRAM_DATE_LABEL = "31 Octobre 2026";
+export const PROGRAM_DATE_ISO = "2026-10-31T00:00:00.000Z";
 
 /** Statuts possibles d'un participant. */
 export const STATUSES = [

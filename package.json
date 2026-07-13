@@ -2,7 +2,7 @@
   "name": "coeur-dadorateur",
   "version": "1.0.0",
   "private": true,
-  "description": "Cœur d'Adorateur — plateforme d'inscription au programme d'adoration du 1er Novembre 2026",
+  "description": "Cœur d'Adorateur — plateforme d'inscription au programme d'adoration du 31 Octobre 2026",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

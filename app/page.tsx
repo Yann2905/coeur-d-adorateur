@@ -103,7 +103,7 @@ export default async function HomePage() {
         {[
           {
             icon: Calendar,
-            title: "1er Novembre 2026",
+            title: "31 Octobre 2026",
             text: "Une journée entière dédiée à l'adoration et à la louange.",
           },
           {

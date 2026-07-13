@@ -168,7 +168,7 @@ export async function sendNewAdminEmail(params: {
         </div>
       </div>
       <div style="background:#faf9fe;padding:12px 20px;text-align:center;">
-        <p style="color:#9ca3af;font-size:11px;margin:0;">${PROGRAM_NAME} — 1er Novembre 2026</p>
+        <p style="color:#9ca3af;font-size:11px;margin:0;">${PROGRAM_NAME} — 31 Octobre 2026</p>
       </div>
     </div>
   </div>`;
@@ -226,7 +226,7 @@ export async function sendNewRegistrationEmail(
         </div>
       </div>
       <div style="background:#faf9fe;padding:16px 24px;text-align:center;">
-        <p style="color:#9ca3af;font-size:12px;margin:0;">${PROGRAM_NAME} — Programme du 1er Novembre 2026</p>
+        <p style="color:#9ca3af;font-size:12px;margin:0;">${PROGRAM_NAME} — Programme du 31 Octobre 2026</p>
       </div>
     </div>
   </div>`;

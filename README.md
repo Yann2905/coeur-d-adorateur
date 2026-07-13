@@ -1,6 +1,6 @@
 # ❤️ Cœur d'Adorateur
 
-Plateforme professionnelle d'inscription au **programme d'adoration du 1er Novembre 2026**.
+Plateforme professionnelle d'inscription au **programme d'adoration du 31 Octobre 2026**.
 
 Elle permet :
 

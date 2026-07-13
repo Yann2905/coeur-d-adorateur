@@ -22,11 +22,11 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
-    default: `${PROGRAM_NAME} — Programme d'adoration du 1er Novembre 2026`,
+    default: `${PROGRAM_NAME} — Programme d'adoration du 31 Octobre 2026`,
     template: `%s · ${PROGRAM_NAME}`,
   },
   description:
-    "Inscris-toi pour participer au grand programme d'adoration du 1er Novembre 2026. Cœur d'Adorateur — préparons ensemble ce moment de louange et l'agapé.",
+    "Inscris-toi pour participer au grand programme d'adoration du 31 Octobre 2026. Cœur d'Adorateur — préparons ensemble ce moment de louange et l'agapé.",
   applicationName: PROGRAM_NAME,
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -43,9 +43,9 @@ export const metadata: Metadata = {
     apple: [{ url: "/icon-image?size=180", sizes: "180x180" }],
   },
   openGraph: {
-    title: `${PROGRAM_NAME} — 1er Novembre 2026`,
+    title: `${PROGRAM_NAME} — 31 Octobre 2026`,
     description:
-      "Inscris-toi pour participer au programme d'adoration du 1er Novembre 2026.",
+      "Inscris-toi pour participer au programme d'adoration du 31 Octobre 2026.",
     type: "website",
     locale: "fr_FR",
   },

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneField } from "@/components/ui/phone-field";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -170,27 +171,23 @@ export function RegistrationForm() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div data-field="whatsapp">
             <Label htmlFor="whatsapp">Numéro WhatsApp *</Label>
-            <Input
+            <PhoneField
               id="whatsapp"
-              type="tel"
-              inputMode="tel"
               value={values.whatsapp}
-              onChange={(e) => set("whatsapp", e.target.value)}
-              placeholder="+229 01 23 45 67"
-              className={cn("mt-1.5", errors.whatsapp && "border-destructive")}
+              onChange={(v) => set("whatsapp", v)}
+              invalid={!!errors.whatsapp}
+              className="mt-1.5"
             />
             <FieldError msg={errors.whatsapp} />
           </div>
           <div data-field="telephone">
             <Label htmlFor="telephone">Téléphone joignable *</Label>
-            <Input
+            <PhoneField
               id="telephone"
-              type="tel"
-              inputMode="tel"
               value={values.telephone}
-              onChange={(e) => set("telephone", e.target.value)}
-              placeholder="+229 01 23 45 67"
-              className={cn("mt-1.5", errors.telephone && "border-destructive")}
+              onChange={(v) => set("telephone", v)}
+              invalid={!!errors.telephone}
+              className="mt-1.5"
             />
             <FieldError msg={errors.telephone} />
           </div>

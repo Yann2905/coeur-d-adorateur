@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneField } from "@/components/ui/phone-field";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -203,16 +204,11 @@ export function AdminsManager({
                 </div>
                 <div>
                   <Label>Numéro *</Label>
-                  <Input
-                    type="tel"
-                    inputMode="tel"
-                    className={cn(
-                      "mt-1.5",
-                      errors.telephone && "border-destructive"
-                    )}
+                  <PhoneField
                     value={values.telephone}
-                    onChange={(e) => set("telephone", e.target.value)}
-                    placeholder="+229 01 23 45 67"
+                    onChange={(v) => set("telephone", v)}
+                    invalid={!!errors.telephone}
+                    className="mt-1.5"
                   />
                   <FieldError msg={errors.telephone} />
                 </div>

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneField } from "@/components/ui/phone-field";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -258,18 +259,18 @@ export function ParticipantDetail({
                   </div>
                   <div>
                     <Label>WhatsApp</Label>
-                    <Input
-                      className="mt-1.5"
+                    <PhoneField
                       value={form.whatsapp}
-                      onChange={(e) => setField("whatsapp", e.target.value)}
+                      onChange={(v) => setField("whatsapp", v)}
+                      className="mt-1.5"
                     />
                   </div>
                   <div>
                     <Label>Téléphone</Label>
-                    <Input
-                      className="mt-1.5"
+                    <PhoneField
                       value={form.telephone}
-                      onChange={(e) => setField("telephone", e.target.value)}
+                      onChange={(v) => setField("telephone", v)}
+                      className="mt-1.5"
                     />
                   </div>
                   <div className="sm:col-span-2">

@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
+import { PROGRAM_GOAL } from "@/lib/constants";
 
-/** Compteur public animé du nombre d'inscrits. */
+/** Compteur public d'inscrits avec objectif (300). */
 export function PublicCounter({ initial }: { initial: number | null }) {
   const [count, setCount] = useState<number | null>(initial);
 
@@ -26,15 +27,28 @@ export function PublicCounter({ initial }: { initial: number | null }) {
     };
   }, [initial]);
 
+  const value = count ?? 0;
+  const pct = Math.min(100, Math.round((value / PROGRAM_GOAL) * 100));
+
   return (
-    <div className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-      <Users className="h-4 w-4 text-gold" />
-      <span className="tabular-nums">
-        {count === null ? "—" : count.toLocaleString("fr-FR")}
-      </span>
-      <span className="text-white/80">
-        {count === 1 ? "personne inscrite" : "personnes inscrites"}
-      </span>
+    <div className="w-full max-w-xs rounded-2xl border border-white/20 bg-white/10 p-4 text-white backdrop-blur">
+      <div className="flex items-center justify-between">
+        <span className="inline-flex items-center gap-1.5 text-sm text-white/85">
+          <Users className="h-4 w-4 text-gold" /> Déjà inscrits
+        </span>
+        <span className="text-sm font-semibold tabular-nums">
+          {count === null ? "—" : value.toLocaleString("fr-FR")} / {PROGRAM_GOAL}
+        </span>
+      </div>
+      <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-white/20">
+        <div
+          className="h-full rounded-full bg-gold transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className="mt-2 text-xs text-white/70">
+        Objectif : {PROGRAM_GOAL} adorateurs
+      </p>
     </div>
   );
 }

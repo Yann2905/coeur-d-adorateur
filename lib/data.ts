@@ -173,11 +173,14 @@ export interface ChartDatum {
 export interface DashboardCharts {
   perDay: ChartDatum[]; // 14 derniers jours
   byVille: ChartDatum[]; // top villes
+  byQuartier: ChartDatum[]; // top quartiers
   byAge: ChartDatum[];
   bySource: ChartDatum[];
   sexe: { homme: number; femme: number; autre: number };
   agape: { oui: number; non: number };
   total: number;
+  last7: number; // inscriptions des 7 derniers jours
+  prev7: number; // inscriptions des 7 jours précédents
 }
 
 /** Agrégats pour les graphiques du tableau de bord. */
@@ -185,12 +188,13 @@ export async function getDashboardCharts(): Promise<DashboardCharts> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("participants")
-    .select("created_at, ville, sexe, age, source, agape");
+    .select("created_at, ville, quartier, sexe, age, source, agape");
 
   const rows =
     (data as Array<{
       created_at: string;
       ville: string | null;
+      quartier: string | null;
       sexe: string | null;
       age: string | null;
       source: string | null;
@@ -240,6 +244,26 @@ export async function getDashboardCharts(): Promise<DashboardCharts> {
     .sort((a, b) => b.value - a.value)
     .slice(0, 8);
 
+  // Quartiers (top 6).
+  const quartierMap = countBy((r) => (r.quartier ? r.quartier.trim() : null));
+  const byQuartier: ChartDatum[] = Array.from(quartierMap.entries())
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 6);
+
+  // Comparaison 7 derniers jours vs 7 jours précédents.
+  const now = Date.now();
+  const day = 86_400_000;
+  let last7 = 0;
+  let prev7 = 0;
+  for (const r of rows) {
+    const t = new Date(r.created_at).getTime();
+    if (Number.isNaN(t)) continue;
+    const ageMs = now - t;
+    if (ageMs <= 7 * day) last7++;
+    else if (ageMs <= 14 * day) prev7++;
+  }
+
   // Tranches d'âge (dans l'ordre défini).
   const ageMap = countBy((r) => r.age);
   const byAge: ChartDatum[] = AGE_OPTIONS.map((o) => ({
@@ -275,11 +299,14 @@ export async function getDashboardCharts(): Promise<DashboardCharts> {
   return {
     perDay,
     byVille,
+    byQuartier,
     byAge,
     bySource,
     sexe: { homme, femme, autre: autreSexe },
     agape: { oui, non },
     total: rows.length,
+    last7,
+    prev7,
   };
 }
 

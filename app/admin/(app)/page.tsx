@@ -11,14 +11,20 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/status-badge";
-import { BarList, SplitBar, TrendBars } from "@/components/admin/charts";
+import {
+  BarList,
+  SplitBar,
+  TrendBars,
+  GoalGauge,
+  TrendBadge,
+} from "@/components/admin/charts";
 import {
   getDashboardStats,
   getRecentParticipants,
   getDashboardCharts,
 } from "@/lib/data";
 import { formatDate } from "@/lib/utils";
-import { PROGRAM_DATE_LABEL } from "@/lib/constants";
+import { PROGRAM_DATE_LABEL, PROGRAM_GOAL } from "@/lib/constants";
 
 export const metadata = { title: "Tableau de bord" };
 
@@ -69,6 +75,75 @@ export default async function DashboardPage() {
         <p className="mt-1 text-muted-foreground">
           Vue d'ensemble des inscriptions au programme du {PROGRAM_DATE_LABEL}.
         </p>
+      </div>
+
+      {/* Objectif + KPI enrichis */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardContent className="p-5 sm:p-6">
+            <div className="mb-1 flex items-center justify-between">
+              <h2 className="font-display text-lg font-semibold">
+                Objectif de participants
+              </h2>
+              <span className="text-xs text-muted-foreground">
+                Cible : {PROGRAM_GOAL}
+              </span>
+            </div>
+            <GoalGauge value={stats.total} goal={PROGRAM_GOAL} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex h-full flex-col justify-center gap-3 p-5 sm:p-6">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">
+                Rythme (7 derniers jours)
+              </span>
+              <TrendBadge last7={charts.last7} prev7={charts.prev7} />
+            </div>
+            <p className="text-3xl font-bold tabular-nums">
+              {charts.last7.toLocaleString("fr-FR")}
+              <span className="text-base font-normal text-muted-foreground">
+                {" "}
+                inscription(s)
+              </span>
+            </p>
+            <p className="text-xs text-muted-foreground">
+              contre {charts.prev7} la semaine précédente
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Taux clés */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Taux de présence</p>
+            <p className="mt-1 text-2xl font-bold tabular-nums">
+              {stats.total
+                ? Math.round((stats.presents / stats.total) * 100)
+                : 0}
+              %
+              <span className="ml-2 text-sm font-normal text-muted-foreground">
+                ({stats.presents}/{stats.total})
+              </span>
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Taux de confirmation</p>
+            <p className="mt-1 text-2xl font-bold tabular-nums">
+              {stats.total
+                ? Math.round((stats.confirmes / stats.total) * 100)
+                : 0}
+              %
+              <span className="ml-2 text-sm font-normal text-muted-foreground">
+                ({stats.confirmes}/{stats.total})
+              </span>
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Cartes statistiques */}
@@ -209,6 +284,15 @@ export default async function DashboardPage() {
               Villes (top 8)
             </h2>
             <BarList items={charts.byVille} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <h2 className="mb-4 font-display text-lg font-semibold">
+              Quartiers (top 6)
+            </h2>
+            <BarList items={charts.byQuartier} />
           </CardContent>
         </Card>
 

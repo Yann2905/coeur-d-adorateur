@@ -1,5 +1,67 @@
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ChartDatum } from "@/lib/data";
+
+/* ─── Jauge d'objectif (X / objectif) ─── */
+export function GoalGauge({ value, goal }: { value: number; goal: number }) {
+  const pct = goal > 0 ? Math.min(100, Math.round((value / goal) * 100)) : 0;
+  const remaining = Math.max(0, goal - value);
+  return (
+    <div>
+      <div className="flex items-end justify-between">
+        <p>
+          <span className="text-4xl font-bold tabular-nums">
+            {value.toLocaleString("fr-FR")}
+          </span>
+          <span className="text-lg text-muted-foreground">
+            {" "}
+            / {goal.toLocaleString("fr-FR")}
+          </span>
+        </p>
+        <span className="text-2xl font-bold tabular-nums text-primary">
+          {pct}%
+        </span>
+      </div>
+      <div className="mt-3 h-3.5 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-primary to-fuchsia-500 transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {remaining > 0
+          ? `Encore ${remaining.toLocaleString("fr-FR")} inscription(s) pour atteindre l'objectif.`
+          : "Objectif atteint, bravo !"}
+      </p>
+    </div>
+  );
+}
+
+/* ─── Indicateur de tendance (7 jours vs 7 précédents) ─── */
+export function TrendBadge({ last7, prev7 }: { last7: number; prev7: number }) {
+  let pct = 0;
+  if (prev7 === 0) pct = last7 > 0 ? 100 : 0;
+  else pct = Math.round(((last7 - prev7) / prev7) * 100);
+  const up = pct > 0;
+  const flat = pct === 0;
+  const Icon = flat ? Minus : up ? TrendingUp : TrendingDown;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold",
+        flat
+          ? "bg-muted text-muted-foreground"
+          : up
+            ? "bg-emerald-500/10 text-emerald-600"
+            : "bg-rose-500/10 text-rose-600"
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" />
+      {up ? "+" : ""}
+      {pct}%
+    </span>
+  );
+}
 
 /* ─── Liste de barres horizontales (villes, âge, source…) ─── */
 export function BarList({

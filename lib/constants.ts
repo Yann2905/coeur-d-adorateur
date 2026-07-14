@@ -2,6 +2,9 @@ export const PROGRAM_NAME = "Cœur d'Adorateur";
 export const PROGRAM_DATE_LABEL = "31 Octobre 2026";
 export const PROGRAM_DATE_ISO = "2026-10-31T00:00:00.000Z";
 
+/** Objectif de participants. */
+export const PROGRAM_GOAL = 300;
+
 /** Heure et lieu du programme. */
 export const PROGRAM_TIME_LABEL = "9h00";
 export const PROGRAM_VENUE = "MIDC, Daloa";

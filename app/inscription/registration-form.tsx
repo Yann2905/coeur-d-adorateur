@@ -50,6 +50,20 @@ const initialState = {
   website: "", // honeypot
 };
 
+const FIELD_LABELS: Record<string, string> = {
+  prenom: "Prénom",
+  nom: "Nom",
+  whatsapp: "Numéro WhatsApp",
+  telephone: "Téléphone joignable",
+  email: "Email",
+  ville: "Ville",
+  quartier: "Quartier",
+  sexe: "Sexe",
+  age: "Tranche d'âge",
+  eglise: "Église",
+  source: "Source",
+};
+
 function SectionTitle({
   icon: Icon,
   children,
@@ -94,16 +108,27 @@ export function RegistrationForm() {
       const fe: Errors = {};
       for (const issue of parsed.error.issues) {
         const k = issue.path[0];
-        if (typeof k === "string" && !fe[k]) fe[k] = issue.message;
+        // On ignore le honeypot ("website") : il ne doit jamais bloquer un vrai
+        // utilisateur (le serveur s'en occupe silencieusement).
+        if (typeof k === "string" && k !== "website" && !fe[k]) {
+          fe[k] = issue.message;
+        }
       }
-      setErrors(fe);
-      swalError(
-        "Formulaire incomplet",
-        "Merci de vérifier les champs indiqués."
-      );
-      const first = document.querySelector<HTMLElement>(`[data-field="${Object.keys(fe)[0]}"]`);
-      first?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
+
+      // S'il ne reste que l'erreur du honeypot, on laisse passer.
+      if (Object.keys(fe).length > 0) {
+        setErrors(fe);
+        const labels = Object.keys(fe).map((k) => FIELD_LABELS[k] ?? k);
+        swalError(
+          "Formulaire incomplet",
+          `Merci de vérifier : ${labels.join(", ")}.`
+        );
+        const first = document.querySelector<HTMLElement>(
+          `[data-field="${Object.keys(fe)[0]}"]`
+        );
+        first?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
     }
 
     startTransition(async () => {
@@ -123,14 +148,20 @@ export function RegistrationForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-9" noValidate>
-      {/* Honeypot anti-spam (invisible) */}
-      <div className="absolute left-[-9999px]" aria-hidden="true">
-        <label htmlFor="website">Ne pas remplir</label>
+      {/* Honeypot anti-spam (invisible, nom neutre pour éviter l'auto-remplissage) */}
+      <div
+        className="absolute left-[-9999px] h-0 w-0 overflow-hidden"
+        aria-hidden="true"
+      >
         <input
-          id="website"
-          name="website"
+          id="cad_extra"
+          name="cad_extra"
+          type="text"
           tabIndex={-1}
           autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
           value={values.website}
           onChange={(e) => set("website", e.target.value)}
         />

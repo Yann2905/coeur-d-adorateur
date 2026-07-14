@@ -1,5 +1,5 @@
 /* Cœur d'Adorateur — Service Worker (PWA) */
-const CACHE = "coeur-adorateur-v1";
+const CACHE = "coeur-adorateur-v2";
 const OFFLINE_URL = "/offline";
 const PRECACHE = ["/", "/inscription", "/offline", "/icon.svg", "/manifest.webmanifest"];
 
@@ -7,7 +7,15 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).catch(() => {})
   );
+  // Active immédiatement la nouvelle version (mise à jour automatique).
   self.skipWaiting();
+});
+
+// Permet à la page de forcer l'activation de la nouvelle version.
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("activate", (event) => {

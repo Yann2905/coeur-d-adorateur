@@ -11,7 +11,12 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/status-badge";
-import { getDashboardStats, getRecentParticipants } from "@/lib/data";
+import { BarList, SplitBar, TrendBars } from "@/components/admin/charts";
+import {
+  getDashboardStats,
+  getRecentParticipants,
+  getDashboardCharts,
+} from "@/lib/data";
 import { formatDate } from "@/lib/utils";
 import { PROGRAM_DATE_LABEL } from "@/lib/constants";
 
@@ -49,9 +54,10 @@ const STAT_CARDS = [
 ] as const;
 
 export default async function DashboardPage() {
-  const [stats, recent] = await Promise.all([
+  const [stats, recent, charts] = await Promise.all([
     getDashboardStats(),
     getRecentParticipants(6),
+    getDashboardCharts(),
   ]);
 
   return (
@@ -119,6 +125,112 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Tendance des inscriptions */}
+      <Card>
+        <CardContent className="p-5 sm:p-6">
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <h2 className="font-display text-lg font-semibold">
+              Inscriptions (14 derniers jours)
+            </h2>
+            <span className="text-sm text-muted-foreground">
+              {charts.total.toLocaleString("fr-FR")} au total
+            </span>
+          </div>
+          <TrendBars data={charts.perDay} />
+        </CardContent>
+      </Card>
+
+      {/* Répartitions */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <h2 className="mb-4 font-display text-lg font-semibold">
+              Agapé — préparation du repas
+            </h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              <span className="text-2xl font-bold text-gold-foreground">
+                {charts.agape.oui.toLocaleString("fr-FR")}
+              </span>{" "}
+              personne(s) attendue(s) pour l'agapé.
+            </p>
+            <SplitBar
+              segments={[
+                {
+                  label: "Oui, présent",
+                  value: charts.agape.oui,
+                  className: "bg-gold",
+                },
+                {
+                  label: "Non / pas sûr",
+                  value: charts.agape.non,
+                  className: "bg-muted-foreground/40",
+                },
+              ]}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <h2 className="mb-4 font-display text-lg font-semibold">
+              Répartition par sexe
+            </h2>
+            <SplitBar
+              segments={[
+                {
+                  label: "Hommes",
+                  value: charts.sexe.homme,
+                  className: "bg-primary",
+                },
+                {
+                  label: "Femmes",
+                  value: charts.sexe.femme,
+                  className: "bg-fuchsia-400",
+                },
+                ...(charts.sexe.autre
+                  ? [
+                      {
+                        label: "Autre",
+                        value: charts.sexe.autre,
+                        className: "bg-muted-foreground/40",
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <h2 className="mb-4 font-display text-lg font-semibold">
+              Villes (top 8)
+            </h2>
+            <BarList items={charts.byVille} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <h2 className="mb-4 font-display text-lg font-semibold">
+              Tranches d'âge
+            </h2>
+            <BarList items={charts.byAge} accent="gold" />
+          </CardContent>
+        </Card>
+
+        {charts.bySource.length > 0 && (
+          <Card className="lg:col-span-2">
+            <CardContent className="p-5 sm:p-6">
+              <h2 className="mb-4 font-display text-lg font-semibold">
+                Comment ont-ils connu le programme ?
+              </h2>
+              <BarList items={charts.bySource} />
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Dernières inscriptions */}

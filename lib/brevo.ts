@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import type { RegistrationInput } from "./validations";
-import { PROGRAM_NAME } from "./constants";
+import { PROGRAM_NAME, PROGRAM_DATE_LABEL } from "./constants";
 import { getAppBaseUrl } from "./app-url";
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
@@ -162,6 +162,58 @@ export async function sendNewAdminEmail(params: {
   return sendEmail({
     to: [{ email: params.email, name: `${params.prenom} ${params.nom}` }],
     subject: `Tes accès administrateur - ${PROGRAM_NAME}`,
+    htmlContent,
+  });
+}
+
+/** Email de confirmation envoyé au participant qui vient de s'inscrire. */
+export async function sendParticipantConfirmationEmail(data: {
+  prenom: string;
+  nom: string;
+  email: string;
+  agape: boolean;
+}): Promise<{ ok: boolean; error?: string }> {
+  const inscriptionUrl = `${getAppBaseUrl()}/inscription`;
+
+  const htmlContent = `
+  <div style="background:#f6f5fb;padding:16px;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
+    <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #eceafc;">
+      <div style="background:linear-gradient(135deg,#5b21b6,#7c3aed);padding:26px 20px;text-align:center;">
+        <h1 style="color:#ffffff;font-size:19px;margin:0 0 2px;">${PROGRAM_NAME}</h1>
+        <p style="color:#e9d5ff;font-size:12px;margin:0;">Inscription confirmée</p>
+      </div>
+      <div style="padding:22px;">
+        <p style="color:#111827;font-size:15px;margin:0 0 10px;">Bonjour ${data.prenom},</p>
+        <p style="color:#374151;font-size:14px;margin:0 0 14px;">
+          Merci pour ton inscription à <strong>${PROGRAM_NAME}</strong> ! Nous avons
+          hâte de t'accueillir le <strong>${PROGRAM_DATE_LABEL}</strong> pour ce
+          grand moment d'adoration.
+        </p>
+        <div style="background:#f4f1fb;border:1px solid #e6e0f5;border-radius:10px;padding:14px 16px;margin:14px 0;">
+          <p style="color:#5b21b6;font-size:14px;font-style:italic;margin:0;">
+            « Que tout ce qui respire loue l'Éternel ! »
+          </p>
+          <p style="color:#9ca3af;font-size:12px;margin:4px 0 0;">Psaume 150.6</p>
+        </div>
+        ${
+          data.agape
+            ? `<p style="color:#374151;font-size:14px;margin:0 0 6px;">Tu as indiqué être disponible pour <strong>l'agapé</strong> après le programme — un repas de communion fraternelle. Merci, on compte sur toi !</p>`
+            : ""
+        }
+        <p style="color:#374151;font-size:14px;margin:14px 0 0;">
+          Prépare ton cœur dès aujourd'hui. Nous prions pour toi et t'attendons
+          avec joie.
+        </p>
+      </div>
+      <div style="background:#faf9fe;padding:12px 20px;text-align:center;">
+        <p style="color:#9ca3af;font-size:11px;margin:0;">${PROGRAM_NAME} — ${PROGRAM_DATE_LABEL}</p>
+      </div>
+    </div>
+  </div>`;
+
+  return sendEmail({
+    to: [{ email: data.email, name: `${data.prenom} ${data.nom}` }],
+    subject: `Ton inscription est confirmée — ${PROGRAM_NAME}`,
     htmlContent,
   });
 }

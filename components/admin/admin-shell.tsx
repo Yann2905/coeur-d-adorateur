@@ -13,6 +13,7 @@ import {
   ExternalLink,
   QrCode,
   Users2,
+  CheckSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/brand";
@@ -25,6 +26,7 @@ const NAV = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
   { href: "/admin/nouveaux", label: "Nouveaux inscrits", icon: UserPlus },
   { href: "/admin/participants", label: "Tous les participants", icon: Users },
+  { href: "/admin/presence", label: "Présence (jour J)", icon: CheckSquare },
   { href: "/admin/partager", label: "Partager (QR code)", icon: QrCode },
   {
     href: "/admin/admins",

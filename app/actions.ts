@@ -2,7 +2,10 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { registrationSchema } from "@/lib/validations";
-import { sendNewRegistrationEmail } from "@/lib/brevo";
+import {
+  sendNewRegistrationEmail,
+  sendParticipantConfirmationEmail,
+} from "@/lib/brevo";
 import { normalizePhone } from "@/lib/utils";
 
 export interface RegistrationResult {
@@ -123,6 +126,20 @@ export async function registerParticipant(
     await sendNewRegistrationEmail(data, adminEmails);
   } catch {
     /* on n'empêche pas l'inscription si l'email échoue */
+  }
+
+  // Email de confirmation au participant (s'il a laissé son adresse).
+  if (data.email) {
+    try {
+      await sendParticipantConfirmationEmail({
+        prenom: data.prenom,
+        nom: data.nom,
+        email: data.email,
+        agape: data.agape,
+      });
+    } catch {
+      /* non bloquant */
+    }
   }
 
   return { ok: true };

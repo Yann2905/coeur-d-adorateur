@@ -15,6 +15,9 @@ import {
   Check,
   AlertTriangle,
   KeyRound,
+  Pencil,
+  X,
+  Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +36,7 @@ import type { Admin } from "@/lib/types";
 import {
   createAdminAction,
   deleteAdminAction,
+  updateAdminAction,
 } from "@/app/admin/actions";
 
 const empty = {
@@ -68,9 +72,53 @@ export function AdminsManager({
   } | null>(null);
   const [copied, setCopied] = useState(false);
 
+  // Édition d'un admin existant.
+  const [editing, setEditing] = useState<Admin | null>(null);
+  const [editForm, setEditForm] = useState(empty);
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({});
+
   const set = (k: keyof typeof empty, v: string) => {
     setValues((s) => ({ ...s, [k]: v }));
     if (errors[k]) setErrors((e) => ({ ...e, [k]: "" }));
+  };
+
+  const setEdit = (k: keyof typeof empty, v: string) => {
+    setEditForm((s) => ({ ...s, [k]: v }));
+    if (editErrors[k]) setEditErrors((e) => ({ ...e, [k]: "" }));
+  };
+
+  const openEdit = (a: Admin) => {
+    setEditErrors({});
+    setEditForm({
+      prenom: a.prenom ?? "",
+      nom: a.nom ?? "",
+      email: a.email,
+      genre: a.genre ?? "",
+      telephone: a.telephone ?? "",
+      role: a.role,
+    });
+    setEditing(a);
+  };
+
+  const saveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editing) return;
+    startTransition(async () => {
+      const res = await updateAdminAction({ id: editing.id, ...editForm });
+      if (res.ok) {
+        swalToast(
+          res.emailSent === false ? "warning" : "success",
+          res.emailSent === false
+            ? "Modifié (email non envoyé)"
+            : "Administrateur modifié, email envoyé"
+        );
+        setEditing(null);
+        router.refresh();
+      } else {
+        if (res.fieldErrors) setEditErrors(res.fieldErrors);
+        swalError("Modification impossible", res.error ?? "Une erreur est survenue.");
+      }
+    });
   };
 
   const submit = (e: React.FormEvent) => {
@@ -353,18 +401,30 @@ export function AdminsManager({
                         </p>
                       </div>
                     </div>
-                    {!isSelf && (
+                    <div className="flex shrink-0 items-center gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-muted-foreground hover:text-destructive"
-                        onClick={() => remove(a)}
+                        className="text-muted-foreground hover:text-primary"
+                        onClick={() => openEdit(a)}
                         disabled={pending}
-                        aria-label="Retirer"
+                        aria-label="Modifier"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Pencil className="h-4 w-4" />
                       </Button>
-                    )}
+                      {!isSelf && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-destructive"
+                          onClick={() => remove(a)}
+                          disabled={pending}
+                          aria-label="Retirer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -372,6 +432,140 @@ export function AdminsManager({
           </CardContent>
         </Card>
       </div>
+
+      {/* Modale d'édition */}
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => !pending && setEditing(null)}
+          />
+          <div className="relative z-10 max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-card p-6 shadow-xl sm:max-w-md sm:rounded-2xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-display text-lg font-semibold">
+                Modifier l'administrateur
+              </h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setEditing(null)}
+                disabled={pending}
+                aria-label="Fermer"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <form onSubmit={saveEdit} className="space-y-4" noValidate>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label>Prénom *</Label>
+                  <Input
+                    className={cn("mt-1.5", editErrors.prenom && "border-destructive")}
+                    value={editForm.prenom}
+                    onChange={(e) => setEdit("prenom", e.target.value)}
+                  />
+                  <FieldError msg={editErrors.prenom} />
+                </div>
+                <div>
+                  <Label>Nom *</Label>
+                  <Input
+                    className={cn("mt-1.5", editErrors.nom && "border-destructive")}
+                    value={editForm.nom}
+                    onChange={(e) => setEdit("nom", e.target.value)}
+                  />
+                  <FieldError msg={editErrors.nom} />
+                </div>
+              </div>
+
+              <div>
+                <Label>Email (identifiant) *</Label>
+                <Input
+                  type="email"
+                  className={cn("mt-1.5", editErrors.email && "border-destructive")}
+                  value={editForm.email}
+                  onChange={(e) => setEdit("email", e.target.value)}
+                />
+                <FieldError msg={editErrors.email} />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Modifier l'email change aussi l'identifiant de connexion.
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label>Genre *</Label>
+                  <Select
+                    value={editForm.genre}
+                    onValueChange={(v) => setEdit("genre", v)}
+                  >
+                    <SelectTrigger
+                      className={cn("mt-1.5", editErrors.genre && "border-destructive")}
+                    >
+                      <SelectValue placeholder="Sélectionne" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="homme">Homme</SelectItem>
+                      <SelectItem value="femme">Femme</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldError msg={editErrors.genre} />
+                </div>
+                <div>
+                  <Label>Numéro *</Label>
+                  <PhoneField
+                    value={editForm.telephone}
+                    onChange={(v) => setEdit("telephone", v)}
+                    invalid={!!editErrors.telephone}
+                    className="mt-1.5"
+                  />
+                  <FieldError msg={editErrors.telephone} />
+                </div>
+              </div>
+
+              <div>
+                <Label>Rôle</Label>
+                <Select
+                  value={editForm.role}
+                  onValueChange={(v) => setEdit("role", v)}
+                >
+                  <SelectTrigger className="mt-1.5">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Administrateur</SelectItem>
+                    <SelectItem value="super_admin">
+                      Super administrateur
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <Button type="submit" className="flex-1" disabled={pending}>
+                  {pending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  Enregistrer
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setEditing(null)}
+                  disabled={pending}
+                >
+                  Annuler
+                </Button>
+              </div>
+              <p className="text-center text-xs text-muted-foreground">
+                L'administrateur recevra un email détaillant les changements.
+              </p>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

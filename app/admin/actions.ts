@@ -9,11 +9,17 @@ import { getAdmin } from "@/lib/auth";
 import {
   updateParticipantSchema,
   createAdminSchema,
+  updateAdminSchema,
 } from "@/lib/validations";
 import { normalizePhone } from "@/lib/utils";
 import { STATUS_LABELS, type Status } from "@/lib/constants";
 import { getAllParticipantsForExport } from "@/lib/data";
-import { sendNewAdminEmail } from "@/lib/brevo";
+import { sendNewAdminEmail, sendAdminUpdatedEmail } from "@/lib/brevo";
+
+const genreLabel = (g: string | null | undefined) =>
+  g === "homme" ? "Homme" : g === "femme" ? "Femme" : "—";
+const roleLabelFr = (r: string | null | undefined) =>
+  r === "super_admin" ? "Super administrateur" : "Administrateur";
 import type { Participant } from "@/lib/types";
 
 /** Génère un mot de passe lisible et sécurisé (sans caractères ambigus). */
@@ -431,6 +437,123 @@ export async function createAdminAction(
 
   revalidatePath("/admin/admins");
   return { ok: true, password, emailSent, emailError };
+}
+
+/** Modifie les informations d'un administrateur + email récapitulatif. */
+export async function updateAdminAction(
+  formData: unknown
+): Promise<CreateAdminResult> {
+  const auth = await getAdmin();
+  if (!auth) return { ok: false, error: "Non autorisé." };
+  if (auth.admin.role !== "super_admin") {
+    return { ok: false, error: "Action réservée au super-administrateur." };
+  }
+
+  const parsed = updateAdminSchema.safeParse(formData);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const k = issue.path[0];
+      if (typeof k === "string" && !fieldErrors[k]) fieldErrors[k] = issue.message;
+    }
+    return { ok: false, error: "Merci de corriger les champs.", fieldErrors };
+  }
+
+  const d = parsed.data;
+  const admin = createAdminClient();
+
+  const { data: current } = await admin
+    .from("admins")
+    .select("id, email, nom, prenom, genre, telephone, role")
+    .eq("id", d.id)
+    .maybeSingle();
+  if (!current) return { ok: false, error: "Administrateur introuvable." };
+
+  const newEmail = d.email.trim().toLowerCase();
+  const oldEmail = (current.email ?? "").toLowerCase();
+  const emailChanged = newEmail !== oldEmail;
+
+  if (emailChanged) {
+    const { data: exists } = await admin
+      .from("admins")
+      .select("id")
+      .eq("email", newEmail)
+      .neq("id", d.id)
+      .maybeSingle();
+    if (exists) {
+      return {
+        ok: false,
+        error: "Cet email est déjà utilisé par un autre administrateur.",
+        fieldErrors: { email: "Email déjà utilisé." },
+      };
+    }
+    // Met à jour l'email du compte d'authentification (garde la connexion possible).
+    try {
+      const { data: list } = await admin.auth.admin.listUsers();
+      const u = list?.users.find(
+        (x) => (x.email ?? "").toLowerCase() === oldEmail
+      );
+      if (u) {
+        await admin.auth.admin.updateUserById(u.id, {
+          email: newEmail,
+          email_confirm: true,
+        });
+      }
+    } catch {
+      /* on continue : la ligne admins reste la source de vérité */
+    }
+  }
+
+  const newPhone = normalizePhone(d.telephone);
+  const { error } = await admin
+    .from("admins")
+    .update({
+      email: newEmail,
+      prenom: d.prenom,
+      nom: d.nom,
+      genre: d.genre,
+      telephone: newPhone,
+      role: d.role,
+    })
+    .eq("id", d.id);
+
+  if (error) return { ok: false, error: "Échec de la mise à jour." };
+
+  // Calcule les changements pour l'email récapitulatif.
+  const changes: { label: string; before: string; after: string }[] = [];
+  const diff = (label: string, before: string, after: string) => {
+    if ((before ?? "").trim() !== (after ?? "").trim()) {
+      changes.push({ label, before: before || "—", after: after || "—" });
+    }
+  };
+  diff("prénom", current.prenom ?? "", d.prenom);
+  diff("nom", current.nom ?? "", d.nom);
+  diff("email (identifiant)", current.email ?? "", newEmail);
+  diff("genre", genreLabel(current.genre), genreLabel(d.genre));
+  diff("numéro", current.telephone ?? "", newPhone);
+  diff("rôle", roleLabelFr(current.role), roleLabelFr(d.role));
+
+  let emailSent = false;
+  let emailError: string | undefined;
+  if (changes.length > 0) {
+    try {
+      const res = await sendAdminUpdatedEmail({
+        email: newEmail,
+        prenom: d.prenom,
+        nom: d.nom,
+        changes,
+      });
+      emailSent = res.ok;
+      emailError = res.error;
+    } catch (e) {
+      emailError = (e as Error).message;
+    }
+  } else {
+    emailSent = true;
+  }
+
+  revalidatePath("/admin/admins");
+  return { ok: true, emailSent, emailError };
 }
 
 /** Supprime un administrateur (compte Auth + ligne admins). */

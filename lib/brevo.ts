@@ -166,6 +166,61 @@ export async function sendNewAdminEmail(params: {
   });
 }
 
+/** Prévient un administrateur que ses informations ont été modifiées. */
+export async function sendAdminUpdatedEmail(params: {
+  email: string;
+  prenom: string;
+  nom: string;
+  changes: { label: string; before: string; after: string }[];
+}): Promise<{ ok: boolean; error?: string }> {
+  const loginUrl = `${getAppBaseUrl()}/admin/login`;
+
+  const lines = params.changes
+    .map(
+      (c) =>
+        `<li style="margin-bottom:8px;color:#374151;font-size:14px;">
+           Ton <strong>${c.label}</strong> a été modifié : ce n'est plus
+           « <span style="color:#b91c1c;">${c.before}</span> » mais
+           « <strong style="color:#15803d;">${c.after}</strong> ».
+         </li>`
+    )
+    .join("");
+
+  const htmlContent = `
+  <div style="background:#f6f5fb;padding:16px;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
+    <div style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #eceafc;">
+      <div style="background:linear-gradient(135deg,#5b21b6,#7c3aed);padding:20px;text-align:center;">
+        <h1 style="color:#ffffff;font-size:17px;margin:0 0 2px;">${PROGRAM_NAME}</h1>
+        <p style="color:#e9d5ff;font-size:12px;margin:0;">Mise à jour de ton compte</p>
+      </div>
+      <div style="padding:20px;">
+        <p style="color:#111827;font-size:14px;margin:0 0 10px;">Bonjour ${params.prenom} ${params.nom},</p>
+        <p style="color:#374151;font-size:13px;margin:0 0 12px;">
+          Les informations de ton compte administrateur viennent d'être mises à jour :
+        </p>
+        <ul style="padding-left:18px;margin:0 0 14px;">${lines}</ul>
+        <p style="color:#374151;font-size:13px;margin:0;">
+          Si tu n'es pas à l'origine de ce changement, contacte l'équipe.
+        </p>
+        <div style="text-align:center;margin-top:18px;">
+          <a href="${loginUrl}" style="display:inline-block;background:#7c3aed;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:11px 24px;border-radius:9px;">
+            Me connecter
+          </a>
+        </div>
+      </div>
+      <div style="background:#faf9fe;padding:12px 20px;text-align:center;">
+        <p style="color:#9ca3af;font-size:11px;margin:0;">${PROGRAM_NAME}</p>
+      </div>
+    </div>
+  </div>`;
+
+  return sendEmail({
+    to: [{ email: params.email, name: `${params.prenom} ${params.nom}` }],
+    subject: `Ton compte a été mis à jour — ${PROGRAM_NAME}`,
+    htmlContent,
+  });
+}
+
 /** Email de confirmation envoyé au participant qui vient de s'inscrire. */
 export async function sendParticipantConfirmationEmail(data: {
   prenom: string;

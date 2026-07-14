@@ -88,3 +88,16 @@ export const createAdminSchema = z.object({
 });
 
 export type CreateAdminInput = z.infer<typeof createAdminSchema>;
+
+/** Modification d'un administrateur existant. */
+export const updateAdminSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().trim().toLowerCase().email("Adresse email invalide.").max(120),
+  prenom: z.string().trim().min(2, "Prénom requis.").max(80),
+  nom: z.string().trim().min(2, "Nom requis.").max(80),
+  genre: z.enum(["homme", "femme"], { message: "Sélectionne le genre." }),
+  telephone: z.string().trim().regex(phoneRegex, "Numéro de téléphone invalide."),
+  role: z.enum(["admin", "super_admin"]),
+});
+
+export type UpdateAdminInput = z.infer<typeof updateAdminSchema>;

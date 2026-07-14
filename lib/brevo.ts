@@ -172,6 +172,26 @@ export async function sendNewAdminEmail(params: {
   });
 }
 
+/** Envoie un email de test (diagnostic). */
+export async function sendTestEmail(
+  email: string
+): Promise<{ ok: boolean; error?: string }> {
+  return sendEmail({
+    to: [{ email }],
+    subject: `Test d'envoi — ${PROGRAM_NAME}`,
+    htmlContent: `
+      <div style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:24px;background:#f6f5fb;">
+        <div style="max-width:440px;margin:0 auto;background:#fff;border-radius:14px;padding:24px;border:1px solid #eceafc;">
+          <h2 style="color:#5b21b6;margin:0 0 8px;">Test réussi</h2>
+          <p style="color:#374151;font-size:14px;margin:0;">
+            Si tu reçois ce message, l'envoi automatique des emails fonctionne
+            correctement pour <strong>${PROGRAM_NAME}</strong>.
+          </p>
+        </div>
+      </div>`,
+  });
+}
+
 /** Prévient un administrateur que ses informations ont été modifiées. */
 export async function sendAdminUpdatedEmail(params: {
   email: string;

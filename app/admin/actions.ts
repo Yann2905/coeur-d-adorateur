@@ -14,7 +14,11 @@ import {
 import { normalizePhone } from "@/lib/utils";
 import { STATUS_LABELS, type Status } from "@/lib/constants";
 import { getAllParticipantsForExport } from "@/lib/data";
-import { sendNewAdminEmail, sendAdminUpdatedEmail } from "@/lib/brevo";
+import {
+  sendNewAdminEmail,
+  sendAdminUpdatedEmail,
+  sendTestEmail,
+} from "@/lib/brevo";
 
 const genreLabel = (g: string | null | undefined) =>
   g === "homme" ? "Homme" : g === "femme" ? "Femme" : "—";
@@ -305,6 +309,28 @@ export async function bulkToggleContactedAction(
   revalidatePath("/admin/participants");
   revalidatePath("/admin");
   return { ok: true };
+}
+
+/** Diagnostic : envoie un email de test à l'admin connecté. */
+export async function sendTestEmailAction(): Promise<{
+  ok: boolean;
+  error?: string;
+  via: string;
+  to: string;
+}> {
+  const auth = await getAdmin();
+  if (!auth)
+    return { ok: false, error: "Non autorisé.", via: "-", to: "-" };
+
+  const via =
+    process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD
+      ? "Gmail"
+      : process.env.BREVO_API_KEY
+        ? "Brevo"
+        : "aucun fournisseur configuré";
+
+  const res = await sendTestEmail(auth.admin.email);
+  return { ...res, via, to: auth.admin.email };
 }
 
 /** Renvoie tous les participants pour l'export Excel (réservé admin). */

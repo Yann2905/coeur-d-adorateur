@@ -181,9 +181,9 @@ export function AdminsManager({
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-5">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-5">
       {/* Formulaire d'ajout */}
-      <div className="lg:col-span-2">
+      <div className="min-w-0 lg:col-span-2">
         <Card>
           <CardContent className="p-6">
             <h2 className="mb-1 flex items-center gap-2 font-display text-lg font-semibold">
@@ -339,7 +339,7 @@ export function AdminsManager({
       </div>
 
       {/* Liste des admins */}
-      <div className="lg:col-span-3">
+      <div className="min-w-0 lg:col-span-3">
         <Card>
           <CardContent className="p-6">
             <h2 className="mb-4 font-display text-lg font-semibold">
@@ -354,8 +354,8 @@ export function AdminsManager({
                     key={a.id}
                     className="flex items-center justify-between gap-3 rounded-xl border border-border p-3.5"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-gradient text-sm font-semibold text-white">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-gradient text-sm font-semibold text-white">
                         {a.prenom || a.nom
                           ? initials(a.nom, a.prenom)
                           : a.email.charAt(0).toUpperCase()}
@@ -386,16 +386,16 @@ export function AdminsManager({
                             </span>
                           )}
                         </p>
-                        <p className="flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
-                          <span className="inline-flex items-center gap-1">
-                            <Mail className="h-3 w-3" /> {a.email}
-                          </span>
-                          {a.telephone && (
-                            <span className="inline-flex items-center gap-1">
-                              <Phone className="h-3 w-3" /> {a.telephone}
-                            </span>
-                          )}
+                        <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Mail className="h-3 w-3 shrink-0" />
+                          <span className="truncate">{a.email}</span>
                         </p>
+                        {a.telephone && (
+                          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Phone className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{a.telephone}</span>
+                          </p>
+                        )}
                         <p className="text-[11px] text-muted-foreground">
                           Ajouté le {formatDate(a.created_at)}
                         </p>

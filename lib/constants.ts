@@ -2,6 +2,16 @@ export const PROGRAM_NAME = "Cœur d'Adorateur";
 export const PROGRAM_DATE_LABEL = "31 Octobre 2026";
 export const PROGRAM_DATE_ISO = "2026-10-31T00:00:00.000Z";
 
+/** Heure et lieu du programme. */
+export const PROGRAM_TIME_LABEL = "9h00";
+export const PROGRAM_VENUE = "MIDC, Daloa";
+export const PROGRAM_VENUE_SHORT = "MIDC Daloa";
+/** Lien Google Maps (localisation) et itinéraire (navigation). */
+export const PROGRAM_MAPS_URL =
+  "https://www.google.com/maps/search/?api=1&query=MIDC+Daloa";
+export const PROGRAM_DIRECTIONS_URL =
+  "https://www.google.com/maps/dir/?api=1&destination=MIDC+Daloa";
+
 /** Statuts possibles d'un participant. */
 export const STATUSES = [
   "nouveau",

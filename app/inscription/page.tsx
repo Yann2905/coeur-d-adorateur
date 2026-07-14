@@ -3,7 +3,12 @@ import { ArrowLeft } from "lucide-react";
 import { BrandMark } from "@/components/brand";
 import { Card, CardContent } from "@/components/ui/card";
 import { RegistrationForm } from "./registration-form";
-import { PROGRAM_NAME, PROGRAM_DATE_LABEL } from "@/lib/constants";
+import {
+  PROGRAM_NAME,
+  PROGRAM_DATE_LABEL,
+  PROGRAM_TIME_LABEL,
+  PROGRAM_VENUE_SHORT,
+} from "@/lib/constants";
 
 export const metadata = {
   title: "Inscription",
@@ -29,7 +34,9 @@ export default function InscriptionPage() {
           </h1>
           <p className="mx-auto mt-2 max-w-md text-white/85">
             Inscris-toi pour participer au programme d'adoration du{" "}
-            <strong className="font-semibold">{PROGRAM_DATE_LABEL}</strong>.
+            <strong className="font-semibold">{PROGRAM_DATE_LABEL}</strong> à{" "}
+            <strong className="font-semibold">{PROGRAM_TIME_LABEL}</strong>,{" "}
+            {PROGRAM_VENUE_SHORT}.
           </p>
         </div>
       </div>

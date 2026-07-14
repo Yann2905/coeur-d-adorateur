@@ -1,6 +1,12 @@
 import nodemailer from "nodemailer";
 import type { RegistrationInput } from "./validations";
-import { PROGRAM_NAME, PROGRAM_DATE_LABEL } from "./constants";
+import {
+  PROGRAM_NAME,
+  PROGRAM_DATE_LABEL,
+  PROGRAM_TIME_LABEL,
+  PROGRAM_VENUE,
+  PROGRAM_DIRECTIONS_URL,
+} from "./constants";
 import { getAppBaseUrl } from "./app-url";
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
@@ -241,9 +247,16 @@ export async function sendParticipantConfirmationEmail(data: {
         <p style="color:#111827;font-size:15px;margin:0 0 10px;">Bonjour ${data.prenom},</p>
         <p style="color:#374151;font-size:14px;margin:0 0 14px;">
           Merci pour ton inscription à <strong>${PROGRAM_NAME}</strong> ! Nous avons
-          hâte de t'accueillir le <strong>${PROGRAM_DATE_LABEL}</strong> pour ce
-          grand moment d'adoration.
+          hâte de t'accueillir pour ce grand moment d'adoration.
         </p>
+        <div style="background:#f4f1fb;border:1px solid #e6e0f5;border-radius:10px;padding:14px 16px;margin:0 0 14px;">
+          <p style="margin:0 0 6px;color:#111827;font-size:14px;"><strong>Date :</strong> ${PROGRAM_DATE_LABEL}</p>
+          <p style="margin:0 0 6px;color:#111827;font-size:14px;"><strong>Heure :</strong> ${PROGRAM_TIME_LABEL}</p>
+          <p style="margin:0 0 10px;color:#111827;font-size:14px;"><strong>Lieu :</strong> ${PROGRAM_VENUE}</p>
+          <a href="${PROGRAM_DIRECTIONS_URL}" style="display:inline-block;background:#7c3aed;color:#ffffff;text-decoration:none;font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;">
+            Voir l'itinéraire sur Google Maps
+          </a>
+        </div>
         <div style="background:#f4f1fb;border:1px solid #e6e0f5;border-radius:10px;padding:14px 16px;margin:14px 0;">
           <p style="color:#5b21b6;font-size:14px;font-style:italic;margin:0;">
             « Que tout ce qui respire loue l'Éternel ! »

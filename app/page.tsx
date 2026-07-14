@@ -5,8 +5,14 @@ import { BrandMark } from "@/components/brand";
 import { PublicCounter } from "@/components/public-counter";
 import { Countdown } from "@/components/countdown";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { EventDetails } from "@/components/event-details";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { PROGRAM_NAME, PROGRAM_DATE_LABEL } from "@/lib/constants";
+import {
+  PROGRAM_NAME,
+  PROGRAM_DATE_LABEL,
+  PROGRAM_TIME_LABEL,
+  PROGRAM_VENUE_SHORT,
+} from "@/lib/constants";
 
 export const revalidate = 30;
 
@@ -69,8 +75,10 @@ export default async function HomePage() {
             Inscris-toi pour participer au grand programme d'adoration du{" "}
             <strong className="font-semibold text-white">
               {PROGRAM_DATE_LABEL}
-            </strong>
-            . Ensemble, préparons ce moment de louange — et l'agapé qui suivra.
+            </strong>{" "}
+            à <strong className="font-semibold text-white">{PROGRAM_TIME_LABEL}</strong>,{" "}
+            <strong className="font-semibold text-white">{PROGRAM_VENUE_SHORT}</strong>.
+            Ensemble, préparons ce moment de louange — et l'agapé qui suivra.
           </p>
 
           <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
@@ -128,6 +136,16 @@ export default async function HomePage() {
             <p className="mt-1.5 text-sm text-muted-foreground">{text}</p>
           </div>
         ))}
+      </section>
+
+      {/* OÙ & QUAND */}
+      <section className="container pb-20">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="mb-5 text-center font-display text-2xl font-bold sm:text-3xl">
+            Où & quand
+          </h2>
+          <EventDetails />
+        </div>
       </section>
 
       {/* APPEL FINAL */}

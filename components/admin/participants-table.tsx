@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import { Download, Check, X, Loader2, PhoneCall } from "lucide-react";
+import { Download, Check, X, Loader2, PhoneCall, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -23,12 +23,13 @@ import {
 import { StatusBadge } from "@/components/status-badge";
 import { ContactButtons } from "@/components/admin/contact-buttons";
 import { formatDate, initials } from "@/lib/utils";
-import { swalToast, swalError } from "@/lib/swal";
+import { swalToast, swalError, swalConfirm } from "@/lib/swal";
 import { STATUSES, STATUS_LABELS, type Status } from "@/lib/constants";
 import { downloadParticipantsExcel } from "@/lib/xlsx-export";
 import {
   bulkUpdateStatusAction,
   bulkToggleContactedAction,
+  deleteParticipantAction,
 } from "@/app/admin/actions";
 import type { Participant } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -85,6 +86,30 @@ export function ParticipantsTable({ rows }: { rows: Participant[] }) {
     } catch {
       swalError("Erreur", "Export impossible.");
     }
+  };
+
+  const handleDelete = async (p: Participant) => {
+    const confirmed = await swalConfirm({
+      title: "Supprimer ce participant ?",
+      text: `${p.prenom} ${p.nom} sera définitivement supprimé de la base. Il pourra alors se réinscrire.`,
+      confirmText: "Oui, supprimer",
+      danger: true,
+    });
+    if (!confirmed) return;
+    startTransition(async () => {
+      const res = await deleteParticipantAction(p.id);
+      if (res.ok) {
+        swalToast("success", `${p.prenom} ${p.nom} supprimé`);
+        setSelected((prev) => {
+          const next = new Set(prev);
+          next.delete(p.id);
+          return next;
+        });
+        router.refresh();
+      } else {
+        swalError("Erreur", res.error);
+      }
+    });
   };
 
   return (
@@ -198,13 +223,23 @@ export function ParticipantsTable({ rows }: { rows: Participant[] }) {
                   {formatDate(p.created_at)}
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-end">
+                  <div className="flex items-center justify-end gap-1">
                     <ContactButtons
                       id={p.id}
                       prenom={p.prenom}
                       telephone={p.telephone}
                       whatsapp={p.whatsapp}
                     />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDelete(p)}
+                      disabled={pending}
+                      aria-label="Supprimer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -247,13 +282,23 @@ export function ParticipantsTable({ rows }: { rows: Participant[] }) {
               </div>
               <StatusBadge status={p.status} />
             </div>
-            <div className="mt-3">
+            <div className="mt-3 flex items-center justify-between gap-2">
               <ContactButtons
                 id={p.id}
                 prenom={p.prenom}
                 telephone={p.telephone}
                 whatsapp={p.whatsapp}
               />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 text-muted-foreground hover:text-destructive"
+                onClick={() => handleDelete(p)}
+                disabled={pending}
+                aria-label="Supprimer"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         ))}

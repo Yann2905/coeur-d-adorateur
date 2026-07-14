@@ -311,16 +311,17 @@ export async function bulkToggleContactedAction(
   return { ok: true };
 }
 
-/** Diagnostic : envoie un email de test à l'admin connecté. */
+/** Diagnostic : envoie un email de test à TOUS les administrateurs. */
 export async function sendTestEmailAction(): Promise<{
   ok: boolean;
   error?: string;
   via: string;
+  count: number;
   to: string;
 }> {
   const auth = await getAdmin();
   if (!auth)
-    return { ok: false, error: "Non autorisé.", via: "-", to: "-" };
+    return { ok: false, error: "Non autorisé.", via: "-", count: 0, to: "-" };
 
   const via =
     process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD
@@ -329,8 +330,27 @@ export async function sendTestEmailAction(): Promise<{
         ? "Brevo"
         : "aucun fournisseur configuré";
 
-  const res = await sendTestEmail(auth.admin.email);
-  return { ...res, via, to: auth.admin.email };
+  // Rassemble tous les emails admins (table admins + ADMIN_EMAILS), dédoublonnés.
+  const admin = createAdminClient();
+  const { data: admins } = await admin.from("admins").select("email");
+  const envEmails = (process.env.ADMIN_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim())
+    .filter(Boolean);
+  const all = Array.from(
+    new Set(
+      [...(admins ?? []).map((a: { email: string }) => a.email), ...envEmails]
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean)
+    )
+  );
+
+  if (all.length === 0) {
+    return { ok: false, error: "Aucun administrateur.", via, count: 0, to: "-" };
+  }
+
+  const res = await sendTestEmail(all);
+  return { ...res, via, count: all.length, to: all.join(", ") };
 }
 
 /** Renvoie tous les participants pour l'export Excel (réservé admin). */

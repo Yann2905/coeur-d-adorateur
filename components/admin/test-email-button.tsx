@@ -16,7 +16,7 @@ export function TestEmailButton() {
       if (res.ok) {
         await swalSuccess(
           "Email de test envoyé",
-          `Envoyé via ${res.via} à ${res.to}. Vérifie ta boîte de réception (et les spams).`
+          `Envoyé via ${res.via} à ${res.count} administrateur(s) : ${res.to}. Demande à chacun de vérifier sa boîte (et ses spams).`
         );
       } else {
         await swalError(
@@ -38,7 +38,7 @@ export function TestEmailButton() {
       ) : (
         <MailCheck className="h-4 w-4" />
       )}
-      Tester l'envoi d'email
+      Tester l'envoi (tous les admins)
     </Button>
   );
 }

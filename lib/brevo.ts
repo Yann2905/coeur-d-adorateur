@@ -172,12 +172,13 @@ export async function sendNewAdminEmail(params: {
   });
 }
 
-/** Envoie un email de test (diagnostic). */
+/** Envoie un email de test (diagnostic) à une ou plusieurs adresses. */
 export async function sendTestEmail(
-  email: string
+  emails: string | string[]
 ): Promise<{ ok: boolean; error?: string }> {
+  const list = Array.isArray(emails) ? emails : [emails];
   return sendEmail({
-    to: [{ email }],
+    to: list.map((email) => ({ email })),
     subject: `Test d'envoi — ${PROGRAM_NAME}`,
     htmlContent: `
       <div style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:24px;background:#f6f5fb;">

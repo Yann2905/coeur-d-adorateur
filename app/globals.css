@@ -121,6 +121,29 @@
   }
 }
 
+/* Impression : on masque l'interface admin et on étale le contenu */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .admin-content {
+    padding-left: 0 !important;
+  }
+  body {
+    background: #ffffff !important;
+  }
+  .print-sheet {
+    box-shadow: none !important;
+    border: none !important;
+  }
+  table {
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+  }
+}
+
 /* Scrollbar discrète */
 ::-webkit-scrollbar {
   width: 10px;

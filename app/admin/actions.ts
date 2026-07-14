@@ -257,6 +257,50 @@ export async function saveNoteAction(
   return { ok: true };
 }
 
+/** Change le statut de plusieurs participants d'un coup. */
+export async function bulkUpdateStatusAction(
+  ids: string[],
+  status: Status
+): Promise<ActionResult> {
+  const auth = await getAdmin();
+  if (!auth) return { ok: false, error: "Non autorisé." };
+  if (ids.length === 0) return { ok: false, error: "Aucune sélection." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("participants")
+    .update({ status, contacte: status !== "nouveau" ? true : undefined })
+    .in("id", ids);
+
+  if (error) return { ok: false, error: "Échec de la mise à jour groupée." };
+
+  revalidatePath("/admin/participants");
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+/** Marque plusieurs participants comme contactés / non contactés. */
+export async function bulkToggleContactedAction(
+  ids: string[],
+  contacte: boolean
+): Promise<ActionResult> {
+  const auth = await getAdmin();
+  if (!auth) return { ok: false, error: "Non autorisé." };
+  if (ids.length === 0) return { ok: false, error: "Aucune sélection." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("participants")
+    .update({ contacte })
+    .in("id", ids);
+
+  if (error) return { ok: false, error: "Échec de l'opération groupée." };
+
+  revalidatePath("/admin/participants");
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
 /** Renvoie tous les participants pour l'export Excel (réservé admin). */
 export async function exportParticipantsAction(): Promise<{
   ok: boolean;

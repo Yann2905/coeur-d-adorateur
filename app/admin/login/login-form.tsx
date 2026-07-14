@@ -90,6 +90,15 @@ export function LoginForm() {
 
       <SubmitButton />
 
+      <div className="text-center">
+        <a
+          href="/admin/forgot-password"
+          className="text-xs font-medium text-primary hover:underline"
+        >
+          Mot de passe oublie ?
+        </a>
+      </div>
+
       <p className="text-center text-xs text-muted-foreground">
         Acces reserve a l'equipe organisatrice.
       </p>

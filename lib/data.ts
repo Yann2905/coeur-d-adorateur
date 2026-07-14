@@ -54,11 +54,54 @@ export interface ParticipantFilters {
   ville?: string;
   status?: string;
   agape?: string;
+  sexe?: string;
+  age?: string;
+  source?: string;
+  from?: string; // date ISO (yyyy-mm-dd)
+  to?: string; // date ISO (yyyy-mm-dd)
+  sort?: string; // recent | ancien | nom | ville
   page?: number;
   pageSize?: number;
 }
 
-/** Liste paginée + filtrée des participants. */
+/** Applique les filtres communs à une requête participants. */
+function applyFilters(query: any, filters: ParticipantFilters) {
+  if (filters.search) {
+    const s = filters.search.trim().replace(/[%,]/g, " ");
+    query = query.or(
+      `nom.ilike.%${s}%,prenom.ilike.%${s}%,telephone.ilike.%${s}%,whatsapp.ilike.%${s}%`
+    );
+  }
+  if (filters.ville) query = query.ilike("ville", `%${filters.ville}%`);
+  if (filters.status) query = query.eq("status", filters.status);
+  if (filters.agape === "oui") query = query.eq("agape", true);
+  if (filters.agape === "non") query = query.eq("agape", false);
+  if (filters.sexe) query = query.eq("sexe", filters.sexe);
+  if (filters.age) query = query.eq("age", filters.age);
+  if (filters.source) query = query.eq("source", filters.source);
+  if (filters.from) query = query.gte("created_at", `${filters.from}T00:00:00`);
+  if (filters.to) query = query.lte("created_at", `${filters.to}T23:59:59`);
+  return query;
+}
+
+function applySort(query: any, sort?: string) {
+  switch (sort) {
+    case "ancien":
+      return query.order("created_at", { ascending: true });
+    case "nom":
+      return query.order("nom", { ascending: true }).order("prenom", {
+        ascending: true,
+      });
+    case "ville":
+      return query.order("ville", { ascending: true }).order("created_at", {
+        ascending: false,
+      });
+    default:
+      return query.order("created_at", { ascending: false });
+  }
+}
+
+/** Liste paginée + filtrée + triée des participants. */
 export async function getParticipants(filters: ParticipantFilters): Promise<{
   rows: Participant[];
   total: number;
@@ -71,21 +114,9 @@ export async function getParticipants(filters: ParticipantFilters): Promise<{
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  let query = supabase
-    .from("participants")
-    .select(SELECT, { count: "exact" })
-    .order("created_at", { ascending: false });
-
-  if (filters.search) {
-    const s = filters.search.trim().replace(/[%,]/g, " ");
-    query = query.or(
-      `nom.ilike.%${s}%,prenom.ilike.%${s}%,telephone.ilike.%${s}%,whatsapp.ilike.%${s}%`
-    );
-  }
-  if (filters.ville) query = query.ilike("ville", `%${filters.ville}%`);
-  if (filters.status) query = query.eq("status", filters.status);
-  if (filters.agape === "oui") query = query.eq("agape", true);
-  if (filters.agape === "non") query = query.eq("agape", false);
+  let query = supabase.from("participants").select(SELECT, { count: "exact" });
+  query = applyFilters(query, filters);
+  query = applySort(query, filters.sort);
 
   const { data, count } = await query.range(from, to);
 

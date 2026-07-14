@@ -14,6 +14,8 @@ import {
   QrCode,
   Users2,
   CheckSquare,
+  MessageCircle,
+  KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/brand";
@@ -27,6 +29,7 @@ const NAV = [
   { href: "/admin/nouveaux", label: "Nouveaux inscrits", icon: UserPlus },
   { href: "/admin/participants", label: "Tous les participants", icon: Users },
   { href: "/admin/presence", label: "Présence (jour J)", icon: CheckSquare },
+  { href: "/admin/whatsapp", label: "Message WhatsApp", icon: MessageCircle },
   { href: "/admin/partager", label: "Partager (QR code)", icon: QrCode },
   {
     href: "/admin/admins",
@@ -107,6 +110,13 @@ export function AdminShell({
           <p className="truncate text-xs font-medium">{adminEmail}</p>
           <p className="text-[10px] text-muted-foreground">Connecté</p>
         </div>
+        <Link
+          href="/admin/change-password"
+          onClick={() => setMobileOpen(false)}
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <KeyRound className="h-3.5 w-3.5" /> Changer mon mot de passe
+        </Link>
         <form action={logoutAction}>
           <Button
             variant="outline"
@@ -123,12 +133,12 @@ export function AdminShell({
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Sidebar desktop */}
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-border bg-card p-4 lg:block">
+      <aside className="no-print fixed inset-y-0 left-0 hidden w-64 border-r border-border bg-card p-4 lg:block">
         {Sidebar}
       </aside>
 
       {/* Topbar mobile */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/80 px-4 py-3 backdrop-blur lg:hidden">
+      <header className="no-print sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/80 px-4 py-3 backdrop-blur lg:hidden">
         <div className="flex items-center gap-2">
           <BrandMark className="h-8 w-8" />
           <span className="font-display text-sm font-semibold">{PROGRAM_NAME}</span>
@@ -170,8 +180,8 @@ export function AdminShell({
       )}
 
       {/* Contenu */}
-      <div className="lg:pl-64">
-        <div className="hidden items-center justify-end gap-2 px-6 pt-4 lg:flex">
+      <div className="admin-content lg:pl-64">
+        <div className="no-print hidden items-center justify-end gap-2 px-6 pt-4 lg:flex">
           <ThemeToggle />
         </div>
         <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>

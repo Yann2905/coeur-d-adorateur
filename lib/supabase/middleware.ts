@@ -38,9 +38,14 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAdminArea = pathname.startsWith("/admin");
   const isLoginPage = pathname === "/admin/login";
+  // Pages admin publiques (accessibles sans être connecté).
+  const isPublicAdmin =
+    isLoginPage ||
+    pathname === "/admin/forgot-password" ||
+    pathname === "/admin/reset-password";
 
-  // Zone admin protégée (sauf la page de connexion).
-  if (isAdminArea && !isLoginPage && !user) {
+  // Zone admin protégée (sauf les pages publiques ci-dessus).
+  if (isAdminArea && !isPublicAdmin && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     url.searchParams.set("redirect", pathname);

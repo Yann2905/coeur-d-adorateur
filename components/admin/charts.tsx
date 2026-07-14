@@ -96,24 +96,43 @@ export function SplitBar({
 export function TrendBars({ data }: { data: ChartDatum[] }) {
   const max = Math.max(1, ...data.map((d) => d.value));
   return (
-    <div className="flex items-end gap-1 sm:gap-1.5" style={{ height: 140 }}>
-      {data.map((d, i) => (
-        <div key={i} className="group flex flex-1 flex-col items-center gap-1">
-          <div className="relative flex w-full flex-1 items-end">
-            <div
-              className="w-full rounded-t-md bg-gradient-to-t from-primary/70 to-fuchsia-500 transition-all group-hover:opacity-80"
-              style={{ height: `${Math.max(4, (d.value / max) * 100)}%` }}
+    // overflow-x-auto : si trop de jours pour l'écran, on défile DANS la carte
+    // (jamais de débordement horizontal de la page).
+    <div className="-mx-1 overflow-x-auto px-1 pb-1">
+      <div
+        className="flex min-w-[420px] items-end gap-1.5"
+        style={{ height: 160 }}
+      >
+        {data.map((d, i) => (
+          <div key={i} className="flex min-w-0 flex-1 flex-col items-center gap-1">
+            {/* Valeur au-dessus de la barre (visible seulement si > 0) */}
+            <span
+              className={cn(
+                "text-[10px] font-bold tabular-nums",
+                d.value > 0 ? "text-primary" : "text-transparent"
+              )}
             >
-              <span className="pointer-events-none absolute -top-5 left-1/2 hidden -translate-x-1/2 rounded bg-foreground px-1.5 py-0.5 text-[10px] font-semibold text-background group-hover:block">
-                {d.value}
-              </span>
+              {d.value}
+            </span>
+            <div className="flex w-full flex-1 items-end">
+              <div
+                className={cn(
+                  "w-full rounded-t-md transition-all",
+                  d.value > 0
+                    ? "bg-gradient-to-t from-primary/70 to-fuchsia-500"
+                    : "bg-muted"
+                )}
+                style={{
+                  height: d.value > 0 ? `${Math.max(6, (d.value / max) * 100)}%` : "4px",
+                }}
+              />
             </div>
+            <span className="whitespace-nowrap text-[9px] tabular-nums text-muted-foreground">
+              {d.label}
+            </span>
           </div>
-          <span className="text-[9px] tabular-nums text-muted-foreground sm:text-[10px]">
-            {d.label}
-          </span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

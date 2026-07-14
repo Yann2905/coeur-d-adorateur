@@ -184,7 +184,9 @@ export function AdminShell({
         <div className="no-print hidden items-center justify-end gap-2 px-6 pt-4 lg:flex">
           <ThemeToggle />
         </div>
-        <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+          {children}
+        </main>
       </div>
     </div>
   );

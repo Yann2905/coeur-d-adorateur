@@ -114,9 +114,13 @@ export async function registerParticipant(
     };
   }
 
-  // Notification email aux admins — échec non bloquant.
+  // Notification email à TOUS les administrateurs — échec non bloquant.
   try {
-    await sendNewRegistrationEmail(data);
+    const { data: admins } = await supabase.from("admins").select("email");
+    const adminEmails = (admins ?? [])
+      .map((a: { email: string }) => a.email)
+      .filter(Boolean);
+    await sendNewRegistrationEmail(data, adminEmails);
   } catch {
     /* on n'empêche pas l'inscription si l'email échoue */
   }

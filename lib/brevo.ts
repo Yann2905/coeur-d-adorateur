@@ -166,17 +166,30 @@ export async function sendNewAdminEmail(params: {
   });
 }
 
-/** Notifie les administrateurs d'une nouvelle inscription. */
+/**
+ * Notifie les administrateurs d'une nouvelle inscription.
+ * Destinataires = tous les emails passés (admins de la base) + ADMIN_EMAILS,
+ * dédoublonnés.
+ */
 export async function sendNewRegistrationEmail(
-  data: RegistrationInput
+  data: RegistrationInput,
+  extraRecipients: string[] = []
 ): Promise<{ ok: boolean; error?: string }> {
-  const adminEmails = (process.env.ADMIN_EMAILS || "")
+  const envEmails = (process.env.ADMIN_EMAILS || "")
     .split(",")
     .map((e) => e.trim())
     .filter(Boolean);
 
+  const adminEmails = Array.from(
+    new Set(
+      [...envEmails, ...extraRecipients]
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean)
+    )
+  );
+
   if (adminEmails.length === 0) {
-    return { ok: false, error: "Aucun ADMIN_EMAILS configuré" };
+    return { ok: false, error: "Aucun destinataire administrateur" };
   }
 
   const nouveauxUrl = `${getAppBaseUrl()}/admin/nouveaux`;
